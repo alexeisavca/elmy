@@ -28,6 +28,11 @@ export default function(domNode, module){
   const NO_MATCH_FOUND = Symbol();
 
   function match(model, [head, ...tail], target, nextState){
+    if("function" == typeof target){
+      let result = target(model, nextState, head, ...tail);
+      if(!Iterable.isIterable(result)) throw new Error("InvalidState");
+      return result;
+    }
     switch(typeof target[head]){
       case "function" :
         let result = target[head](model, nextState, ...tail);
@@ -42,7 +47,7 @@ export default function(domNode, module){
   function update(module, model, [head, ...tail], dontMatch = false){
     if(!dontMatch) {
       let nextState = update.bind(null, module, model, [head, ...tail], true);
-      let matchResult = match(model, [head, ...tail], module.actions || {}, nextState);
+      let matchResult = match(model, [head, ...tail], module.update || {}, nextState);
       if(matchResult != NO_MATCH_FOUND) return matchResult;
     }
 

@@ -74,6 +74,11 @@ exports["default"] = function (domNode, module) {
 
       _again = false;
 
+      if ("function" == typeof target) {
+        var result = target.apply(undefined, [model, nextState, head].concat(_toConsumableArray(tail)));
+        if (!_immutable.Iterable.isIterable(result)) throw new Error("InvalidState");
+        return result;
+      }
       switch (typeof target[head]) {
         case "function":
           var result = target[head].apply(target, [model, nextState].concat(_toConsumableArray(tail)));
@@ -85,7 +90,7 @@ exports["default"] = function (domNode, module) {
           _x4 = target[head];
           _x5 = nextState;
           _again = true;
-          _ref2 = head = tail = result = undefined;
+          _ref2 = head = tail = result = result = undefined;
           continue _function;
 
       }
@@ -95,7 +100,7 @@ exports["default"] = function (domNode, module) {
         _x4 = target;
         _x5 = nextState;
         _again = true;
-        _ref2 = head = tail = result = undefined;
+        _ref2 = head = tail = result = result = undefined;
         continue _function;
       }
       return NO_MATCH_FOUND;
@@ -113,7 +118,7 @@ exports["default"] = function (domNode, module) {
 
     if (!dontMatch) {
       var nextState = update.bind(null, module, model, [head].concat(_toConsumableArray(tail)), true);
-      var matchResult = match(model, [head].concat(_toConsumableArray(tail)), module.actions || {}, nextState);
+      var matchResult = match(model, [head].concat(_toConsumableArray(tail)), module.update || {}, nextState);
       if (matchResult != NO_MATCH_FOUND) return matchResult;
     }
 
