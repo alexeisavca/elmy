@@ -14,7 +14,7 @@ export default function(domNode, module){
 
   function receive(...params){
     try{
-      model = update(module, model, ...params);
+      model = update(module, model, params);
       render(model);
     } catch(e){
       if("NoActionHandler" == e.message) {
@@ -25,24 +25,30 @@ export default function(domNode, module){
     }
   }
 
-  function match(model, [head, ...tail], target){
+  const NO_MATCH_FOUND = Symbol();
+
+  function match(model, [head, ...tail], target, nextState){
     switch(typeof target[head]){
       case "function" :
-        let result = target[head](model, ...tail);
+        let result = target[head](model, nextState, ...tail);
         if(!Iterable.isIterable(result)) throw new Error("InvalidState");
         return result;
-      case "object": return match(model, tail, target[head]);
+      case "object": return match(model, tail, target[head], nextState);
     }
-    if("undefined" != typeof target._) return match(model, ['_', ...tail], target)
+    if("undefined" != typeof target._) return match(model, ['_', ...tail], target, nextState);
+    return NO_MATCH_FOUND;
   }
 
-  function update(module, model, head, ...tail){
-    let matchResult = match(model, [head, ...tail], module.actions || {});
-    if(null !== matchResult && "undefined" != typeof matchResult) return matchResult;
+  function update(module, model, [head, ...tail], dontMatch = false){
+    if(!dontMatch) {
+      let nextState = update.bind(null, module, model, [head, ...tail], true);
+      let matchResult = match(model, [head, ...tail], module.actions || {}, nextState);
+      if(matchResult != NO_MATCH_FOUND) return matchResult;
+    }
 
     if(module.adopt && module.adopt[head]) {
       let path = List.isList(model.get(head)) ? [head, tail.shift()] : [head];
-      return model.setIn(path, update(module.adopt[head], model.getIn(path), ...tail))
+      return model.setIn(path, update(module.adopt[head], model.getIn(path), tail))
     }
 
     if("change" == head){

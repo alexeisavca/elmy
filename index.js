@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; })();
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i]; return arr2; } else { return Array.from(arr); } }
@@ -42,7 +44,7 @@ exports["default"] = function (domNode, module) {
     }
 
     try {
-      model = update.apply(undefined, [module, model].concat(params));
+      model = update(module, model, params);
       render(model);
     } catch (e) {
       if ("NoActionHandler" == e.message) {
@@ -53,13 +55,16 @@ exports["default"] = function (domNode, module) {
     }
   }
 
-  function match(_x, _x2, _x3) {
+  var NO_MATCH_FOUND = Symbol();
+
+  function match(_x2, _x3, _x4, _x5) {
     var _again = true;
 
     _function: while (_again) {
-      var model = _x,
-          _ref = _x2,
-          target = _x3;
+      var model = _x2,
+          _ref = _x3,
+          target = _x4,
+          nextState = _x5;
 
       var _ref2 = _toArray(_ref);
 
@@ -71,45 +76,57 @@ exports["default"] = function (domNode, module) {
 
       switch (typeof target[head]) {
         case "function":
-          var result = target[head].apply(target, [model].concat(_toConsumableArray(tail)));
+          var result = target[head].apply(target, [model, nextState].concat(_toConsumableArray(tail)));
           if (!_immutable.Iterable.isIterable(result)) throw new Error("InvalidState");
           return result;
         case "object":
-          _x = model;
-          _x2 = tail;
-          _x3 = target[head];
+          _x2 = model;
+          _x3 = tail;
+          _x4 = target[head];
+          _x5 = nextState;
           _again = true;
           _ref2 = head = tail = result = undefined;
           continue _function;
 
       }
       if ("undefined" != typeof target._) {
-        _x = model;
-        _x2 = ['_'].concat(_toConsumableArray(tail));
-        _x3 = target;
+        _x2 = model;
+        _x3 = ['_'].concat(_toConsumableArray(tail));
+        _x4 = target;
+        _x5 = nextState;
         _again = true;
         _ref2 = head = tail = result = undefined;
         continue _function;
       }
+      return NO_MATCH_FOUND;
     }
   }
 
-  function update(module, model, head) {
-    for (var _len2 = arguments.length, tail = Array(_len2 > 3 ? _len2 - 3 : 0), _key2 = 3; _key2 < _len2; _key2++) {
-      tail[_key2 - 3] = arguments[_key2];
-    }
+  function update(module, model, _ref3) {
+    var _ref32 = _toArray(_ref3);
 
-    var matchResult = match(model, [head].concat(tail), module.actions || {});
-    if (null !== matchResult && "undefined" != typeof matchResult) return matchResult;
+    var head = _ref32[0];
+
+    var tail = _ref32.slice(1);
+
+    var dontMatch = arguments.length <= 3 || arguments[3] === undefined ? false : arguments[3];
+
+    if (!dontMatch) {
+      var nextState = update.bind(null, module, model, [head].concat(_toConsumableArray(tail)), true);
+      var matchResult = match(model, [head].concat(_toConsumableArray(tail)), module.actions || {}, nextState);
+      if (matchResult != NO_MATCH_FOUND) return matchResult;
+    }
 
     if (module.adopt && module.adopt[head]) {
       var path = _immutable.List.isList(model.get(head)) ? [head, tail.shift()] : [head];
-      return model.setIn(path, update.apply(undefined, [module.adopt[head], model.getIn(path)].concat(tail)));
+      return model.setIn(path, update(module.adopt[head], model.getIn(path), tail));
     }
 
     if ("change" == head) {
-      var key = tail[0];
-      var val = tail[1];
+      var _tail = _slicedToArray(tail, 2);
+
+      var key = _tail[0];
+      var val = _tail[1];
 
       return model.set(key, val);
     }
