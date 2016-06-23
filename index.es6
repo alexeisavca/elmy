@@ -23,16 +23,16 @@ export default function(domNode, module){
     }
   }
 
-  function match([head, ...tail], target){
+  function match(model, [head, ...tail], target){
     switch(typeof target[head]){
       case "function" : return target[head](model, ...tail);
-      case "object": return match(tail, target[head]);
+      case "object": return match(model, tail, target[head]);
     }
-    if("undefined" != typeof target._) return match(['_', ...tail], target)
+    if("undefined" != typeof target._) return match(model, ['_', ...tail], target)
   }
 
   function update(module, model, head, ...tail){
-    let matchResult = match([head, ...tail], module.actions || {});
+    let matchResult = match(model, [head, ...tail], module.actions || {});
     if(null !== matchResult && "undefined" != typeof matchResult) return matchResult;
 
     if(module.adopt && module.adopt[head]) {

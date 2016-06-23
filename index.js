@@ -51,13 +51,14 @@ exports["default"] = function (domNode, module) {
     }
   }
 
-  function match(_x, _x2) {
+  function match(_x, _x2, _x3) {
     var _arguments = arguments;
     var _again = true;
 
     _function: while (_again) {
-      var _ref = _x,
-          target = _x2;
+      var model = _x,
+          _ref = _x2,
+          target = _x3;
 
       var _ref2 = _toArray(_ref);
 
@@ -71,14 +72,14 @@ exports["default"] = function (domNode, module) {
         case "function":
           return target[head].apply(target, [model].concat(_toConsumableArray(tail)));
         case "object":
-          _arguments = [_x = tail, _x2 = target[head]];
+          _arguments = [_x = model, _x2 = tail, _x3 = target[head]];
           _again = true;
           _ref2 = head = tail = undefined;
           continue _function;
 
       }
       if ("undefined" != typeof target._) {
-        _arguments = [_x = ['_'].concat(_toConsumableArray(tail)), _x2 = target];
+        _arguments = [_x = model, _x2 = ['_'].concat(_toConsumableArray(tail)), _x3 = target];
         _again = true;
         _ref2 = head = tail = undefined;
         continue _function;
@@ -91,7 +92,7 @@ exports["default"] = function (domNode, module) {
       tail[_key2 - 3] = arguments[_key2];
     }
 
-    var matchResult = match([head].concat(tail), module.actions || {});
+    var matchResult = match(model, [head].concat(tail), module.actions || {});
     if (null !== matchResult && "undefined" != typeof matchResult) return matchResult;
 
     if (module.adopt && module.adopt[head]) {
