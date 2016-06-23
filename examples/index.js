@@ -26004,9 +26004,7 @@
 	var _alexeisavcaFtoolsMathDec2 = _interopRequireDefault(_alexeisavcaFtoolsMathDec);
 	
 	exports["default"] = {
-	  model: (0, _immutable.fromJS)({
-	    value: 0
-	  }),
+	  model: (0, _immutable.fromJS)({ value: 0 }),
 	
 	  view: function view(_ref) {
 	    var value = _ref.value;
@@ -26097,7 +26095,7 @@
 /* 184 */
 /***/ function(module, exports) {
 
-	module.exports = "import React from \"react\";\r\nimport {fromJS} from \"immutable\";\r\nimport inc from \"@alexeisavca/ftools/math/inc\";\r\nimport dec from \"@alexeisavca/ftools/math/dec\";\r\n\r\nexport default {\r\n  model: fromJS({\r\n    value: 0\r\n  }),\r\n\r\n  view: ({value}) => <span>\r\n    <button onClick={e => value(inc)}>+</button>\r\n    <button onClick={e => value(dec)}>-</button>\r\n    {value()}\r\n  </span>\r\n};"
+	module.exports = "import React from \"react\";\r\nimport {fromJS} from \"immutable\";\r\nimport inc from \"@alexeisavca/ftools/math/inc\";\r\nimport dec from \"@alexeisavca/ftools/math/dec\";\r\n\r\nexport default {\r\n  model: fromJS({value: 0}),\r\n\r\n  view: ({value}) => <span>\r\n    <button onClick={e => value(inc)}>+</button>\r\n    <button onClick={e => value(dec)}>-</button>\r\n    {value()}\r\n  </span>\r\n};"
 
 /***/ },
 /* 185 */
@@ -26122,13 +26120,9 @@
 	var _immutable = __webpack_require__(169);
 	
 	exports["default"] = {
-	  model: (0, _immutable.fromJS)({
-	    locked: false
-	  }),
+	  model: (0, _immutable.fromJS)({ locked: false }),
 	
-	  adopt: {
-	    counter: _counter2["default"]
-	  },
+	  adopt: { counter: _counter2["default"] },
 	
 	  actions: {
 	    counter: {
@@ -26167,7 +26161,7 @@
 /* 186 */
 /***/ function(module, exports) {
 
-	module.exports = "import React from \"react\";\r\nimport Counter from \"./counter\";\r\nimport {fromJS} from \"immutable\";\r\n\r\nexport default {\r\n  model: fromJS({\r\n    locked: false\r\n  }),\r\n\r\n  adopt: {\r\n    counter: Counter\r\n  },\r\n\r\n  actions: {\r\n    counter: {\r\n      change: (state, nextState) => state.get('locked') ? state : nextState()\r\n    }\r\n  },\r\n\r\n  view: ({locked}, {Counter}) => <span>\r\n    {Counter()}\r\n    {locked() ?\r\n        <button onClick={e => locked(false)}>Unlock</button> :\r\n        <button onClick={e => locked(true)}>Lock</button>\r\n    }\r\n  </span>\r\n}"
+	module.exports = "import React from \"react\";\r\nimport Counter from \"./counter\";\r\nimport {fromJS} from \"immutable\";\r\n\r\nexport default {\r\n  model: fromJS({locked: false}),\r\n\r\n  adopt: {counter: Counter},\r\n\r\n  actions: {\r\n    counter: {\r\n      change: (state, nextState) => state.get('locked') ? state : nextState()\r\n    }\r\n  },\r\n\r\n  view: ({locked}, {Counter}) => <span>\r\n    {Counter()}\r\n    {locked() ?\r\n        <button onClick={e => locked(false)}>Unlock</button> :\r\n        <button onClick={e => locked(true)}>Lock</button>\r\n    }\r\n  </span>\r\n}"
 
 /***/ },
 /* 187 */
@@ -26196,9 +26190,7 @@
 	var _libBuildModelIndexEs62 = _interopRequireDefault(_libBuildModelIndexEs6);
 	
 	var DeletableCounter = {
-	  adopt: {
-	    counter: _counter2["default"]
-	  },
+	  adopt: { counter: _counter2["default"] },
 	
 	  view: function view(_, _ref, send) {
 	    var Counter = _ref.Counter;
@@ -26218,13 +26210,9 @@
 	};
 	
 	exports["default"] = {
-	  model: (0, _immutable.fromJS)({
-	    counters: []
-	  }),
+	  model: (0, _immutable.fromJS)({ counters: [] }),
 	
-	  adopt: {
-	    counters: DeletableCounter
-	  },
+	  adopt: { counters: DeletableCounter },
 	
 	  actions: {
 	    counters: function counters(state, nextState, index, action) {
@@ -26259,7 +26247,7 @@
 /* 188 */
 /***/ function(module, exports) {
 
-	module.exports = "import React from \"react\";\r\nimport Counter from \"./counter\";\r\nimport {fromJS} from \"immutable\";\r\nimport buildModel from \"../lib/buildModel/index.es6\";\r\n\r\nlet DeletableCounter = {\r\n  adopt: {\r\n    counter: Counter\r\n  },\r\n\r\n  view: (_, {Counter}, send) => <div>\r\n    {Counter()}\r\n    <i className=\"glyphicon glyphicon-trash\" onClick={e => send(\"delete\")}></i>\r\n  </div>\r\n};\r\n\r\nlet add = counters => counters.push(buildModel(DeletableCounter));\r\n\r\nexport default {\r\n  model: fromJS({\r\n    counters: []\r\n  }),\r\n\r\n  adopt: {\r\n    counters: DeletableCounter\r\n  },\r\n\r\n  actions: {\r\n    counters: (state, nextState, index, action) => \"delete\" == action ? state.deleteIn(['counters', index]) : nextState()\r\n  },\r\n\r\n  view: ({counters}, {Counters}) => <div>\r\n    {Counters()}\r\n    <div>\r\n      <button onClick={e => counters(add)}>Add new</button>\r\n    </div>\r\n  </div>\r\n}"
+	module.exports = "import React from \"react\";\r\nimport Counter from \"./counter\";\r\nimport {fromJS} from \"immutable\";\r\nimport buildModel from \"../lib/buildModel/index.es6\";\r\n\r\nlet DeletableCounter = {\r\n  adopt: {counter: Counter},\r\n\r\n  view: (_, {Counter}, send) => <div>\r\n    {Counter()}\r\n    <i className=\"glyphicon glyphicon-trash\" onClick={e => send(\"delete\")}></i>\r\n  </div>\r\n};\r\n\r\nlet add = counters => counters.push(buildModel(DeletableCounter));\r\n\r\nexport default {\r\n  model: fromJS({counters: []}),\r\n\r\n  adopt: {counters: DeletableCounter},\r\n\r\n  actions: {\r\n    counters: (state, nextState, index, action) => \"delete\" == action ? state.deleteIn(['counters', index]) : nextState()\r\n  },\r\n\r\n  view: ({counters}, {Counters}) => <div>\r\n    {Counters()}\r\n    <div>\r\n      <button onClick={e => counters(add)}>Add new</button>\r\n    </div>\r\n  </div>\r\n}"
 
 /***/ },
 /* 189 */

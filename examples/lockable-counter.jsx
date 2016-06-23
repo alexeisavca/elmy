@@ -3,13 +3,9 @@ import Counter from "./counter";
 import {fromJS} from "immutable";
 
 export default {
-  model: fromJS({
-    locked: false
-  }),
+  model: fromJS({locked: false}),
 
-  adopt: {
-    counter: Counter
-  },
+  adopt: {counter: Counter},
 
   actions: {
     counter: {

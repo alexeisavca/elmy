@@ -4,9 +4,7 @@ import {fromJS} from "immutable";
 import buildModel from "../lib/buildModel/index.es6";
 
 let DeletableCounter = {
-  adopt: {
-    counter: Counter
-  },
+  adopt: {counter: Counter},
 
   view: (_, {Counter}, send) => <div>
     {Counter()}
@@ -17,13 +15,9 @@ let DeletableCounter = {
 let add = counters => counters.push(buildModel(DeletableCounter));
 
 export default {
-  model: fromJS({
-    counters: []
-  }),
+  model: fromJS({counters: []}),
 
-  adopt: {
-    counters: DeletableCounter
-  },
+  adopt: {counters: DeletableCounter},
 
   actions: {
     counters: (state, nextState, index, action) => "delete" == action ? state.deleteIn(['counters', index]) : nextState()
