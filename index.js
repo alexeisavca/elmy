@@ -33,7 +33,7 @@ var _libBuildModelIndexEs62 = _interopRequireDefault(_libBuildModelIndexEs6);
 exports["default"] = function (domNode, module) {
   var Root = (0, _libToComponent2["default"])(module);
   var render = function render(model) {
-    return _reactDom2["default"].render(_react2["default"].createElement(Root, { model: model, send: receive }));
+    return _reactDom2["default"].render(_react2["default"].createElement(Root, { model: model, send: receive }), domNode);
   };
 
   var model = (0, _libBuildModelIndexEs62["default"])(module);
