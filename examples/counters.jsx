@@ -19,7 +19,7 @@ export default {
 
   adopt: {counters: DeletableCounter},
 
-  actions: {
+  update: {
     counters: (state, nextState, index, action) => "delete" == action ? state.deleteIn(['counters', index]) : nextState()
   },
 

@@ -7,7 +7,7 @@ export default {
 
   adopt: {counter: Counter},
 
-  actions: {
+  update: {
     counter: {
       change: (state, nextState) => state.get('locked') ? state : nextState()
     }
