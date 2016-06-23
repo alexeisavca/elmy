@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import {List} from "immutable";
+import {List, Iterable} from "immutable";
 import module2component from "./lib/toComponent";
 import buildModel from "./lib/buildModel/index.es6";
 
@@ -17,15 +17,20 @@ export default function(domNode, module){
       model = update(module, model, ...params);
       render(model);
     } catch(e){
-      if("NoActionHandler" == e){
+      if("NoActionHandler" == e.message) {
         console.error("Could not find handler for action", params);
+      } else if("InvalidState" == e.message){
+        console.error("Invalid state returned by an action handler while trying to perform", params);
       } else throw e;
     }
   }
 
   function match(model, [head, ...tail], target){
     switch(typeof target[head]){
-      case "function" : return target[head](model, ...tail);
+      case "function" :
+        let result = target[head](model, ...tail);
+        if(!Iterable.isIterable(result)) throw new Error("InvalidState");
+        return result;
       case "object": return match(model, tail, target[head]);
     }
     if("undefined" != typeof target._) return match(model, ['_', ...tail], target)
@@ -45,7 +50,7 @@ export default function(domNode, module){
       return model.set(key, val);
     }
 
-    throw "NoActionHandler";
+    throw new Error("NoActionHandler");
   }
 
   render(model);

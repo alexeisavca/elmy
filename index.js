@@ -45,14 +45,15 @@ exports["default"] = function (domNode, module) {
       model = update.apply(undefined, [module, model].concat(params));
       render(model);
     } catch (e) {
-      if ("NoActionHandler" == e) {
+      if ("NoActionHandler" == e.message) {
         console.error("Could not find handler for action", params);
+      } else if ("InvalidState" == e.message) {
+        console.error("Invalid state returned by an action handler while trying to perform", params);
       } else throw e;
     }
   }
 
   function match(_x, _x2, _x3) {
-    var _arguments = arguments;
     var _again = true;
 
     _function: while (_again) {
@@ -70,18 +71,24 @@ exports["default"] = function (domNode, module) {
 
       switch (typeof target[head]) {
         case "function":
-          return target[head].apply(target, [model].concat(_toConsumableArray(tail)));
+          var result = target[head].apply(target, [model].concat(_toConsumableArray(tail)));
+          if (!_immutable.Iterable.isIterable(result)) throw new Error("InvalidState");
+          return result;
         case "object":
-          _arguments = [_x = model, _x2 = tail, _x3 = target[head]];
+          _x = model;
+          _x2 = tail;
+          _x3 = target[head];
           _again = true;
-          _ref2 = head = tail = undefined;
+          _ref2 = head = tail = result = undefined;
           continue _function;
 
       }
       if ("undefined" != typeof target._) {
-        _arguments = [_x = model, _x2 = ['_'].concat(_toConsumableArray(tail)), _x3 = target];
+        _x = model;
+        _x2 = ['_'].concat(_toConsumableArray(tail));
+        _x3 = target;
         _again = true;
-        _ref2 = head = tail = undefined;
+        _ref2 = head = tail = result = undefined;
         continue _function;
       }
     }
@@ -107,7 +114,7 @@ exports["default"] = function (domNode, module) {
       return model.set(key, val);
     }
 
-    throw "NoActionHandler";
+    throw new Error("NoActionHandler");
   }
 
   render(model);
