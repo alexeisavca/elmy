@@ -24,6 +24,7 @@
   "homepage": "https://github.com/alexeisavca/elmy#readme",
   "peerDependencies": {
     "react": "^15.1.0",
-    "react-dom": "^15.1.0"
+    "react-dom": "^15.1.0",
+    "immutable": "^3.8.1"
   }
 }
