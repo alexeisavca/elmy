@@ -1,17 +1,16 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import {fromJS, List} from "immutable";
+import {List} from "immutable";
 import module2component from "./lib/toComponent";
+import buildModel from "./lib/buildModel/index.es6";
 
 export default function(domNode, module){
   let Root = module2component(module);
   let render = model => ReactDOM.render(
       React.createElement(Root, {model, send: receive})
   );
-  let computeModel = ({model = fromJS({}), adopt = {}}) =>
-      Object.keys(adopt).reduce((model, key) => model.has(key) ? model :
-          model.set(key, computeModel(adopt[key])), model);
-  let model = computeModel(module);
+
+  let model = buildModel(module);
 
   function receive(...params){
     try{

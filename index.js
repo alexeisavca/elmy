@@ -24,21 +24,17 @@ var _libToComponent = require("./lib/toComponent");
 
 var _libToComponent2 = _interopRequireDefault(_libToComponent);
 
+var _libBuildModelIndexEs6 = require("./lib/buildModel/index.es6");
+
+var _libBuildModelIndexEs62 = _interopRequireDefault(_libBuildModelIndexEs6);
+
 exports["default"] = function (domNode, module) {
   var Root = (0, _libToComponent2["default"])(module);
   var render = function render(model) {
     return _reactDom2["default"].render(_react2["default"].createElement(Root, { model: model, send: receive }));
   };
-  var computeModel = function computeModel(_ref) {
-    var _ref$model = _ref.model;
-    var model = _ref$model === undefined ? (0, _immutable.fromJS)({}) : _ref$model;
-    var _ref$adopt = _ref.adopt;
-    var adopt = _ref$adopt === undefined ? {} : _ref$adopt;
-    return Object.keys(adopt).reduce(function (model, key) {
-      return model.has(key) ? model : model.set(key, computeModel(adopt[key]));
-    }, model);
-  };
-  var model = computeModel(module);
+
+  var model = (0, _libBuildModelIndexEs62["default"])(module);
 
   function receive() {
     for (var _len = arguments.length, params = Array(_len), _key = 0; _key < _len; _key++) {
@@ -60,14 +56,14 @@ exports["default"] = function (domNode, module) {
     var _again = true;
 
     _function: while (_again) {
-      var _ref2 = _x,
+      var _ref = _x,
           target = _x2;
 
-      var _ref22 = _toArray(_ref2);
+      var _ref2 = _toArray(_ref);
 
-      var head = _ref22[0];
+      var head = _ref2[0];
 
-      var tail = _ref22.slice(1);
+      var tail = _ref2.slice(1);
 
       _again = false;
 
@@ -77,14 +73,14 @@ exports["default"] = function (domNode, module) {
         case "object":
           _arguments = [_x = tail, _x2 = target[head]];
           _again = true;
-          _ref22 = head = tail = undefined;
+          _ref2 = head = tail = undefined;
           continue _function;
 
       }
       if ("undefined" != typeof target._) {
         _arguments = [_x = ['_'].concat(_toConsumableArray(tail)), _x2 = target];
         _again = true;
-        _ref22 = head = tail = undefined;
+        _ref2 = head = tail = undefined;
         continue _function;
       }
     }
