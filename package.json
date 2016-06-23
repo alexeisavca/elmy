@@ -1,0 +1,25 @@
+{
+  "name": "elmy",
+  "version": "0.0.1",
+  "description": "An ELM architecture implementation for React",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexeisavca/elmy.git"
+  },
+  "keywords": [
+    "elm",
+    "architecture",
+    "react",
+    "fp"
+  ],
+  "author": "Alexei Savca",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alexeisavca/elmy/issues"
+  },
+  "homepage": "https://github.com/alexeisavca/elmy#readme"
+}
