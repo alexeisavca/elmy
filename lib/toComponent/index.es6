@@ -34,6 +34,10 @@ let module2component = ({model = fromJS({}), adopt = {}, view}) => class extends
     this.getBoundChildren = () => boundChildren;
   }
 
+  shouldComponentUpdate(nextProps){
+    return this.props.model != nextProps.model;
+  }
+
   render(){
     return view(this.getAccessors(), this.getBoundChildren(), this.props.send, this.props.model);
   }
