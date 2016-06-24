@@ -485,3 +485,4 @@ and check how it looks on the [examples](https://alexeisavca.github.io/elmy/) pa
 * computable models
 * side effects
 * inputs that bind to accessors
+* Elmy mixin and superclass for React components
