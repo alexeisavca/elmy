@@ -272,7 +272,7 @@ var Counters = {
 ```
 
 As you see, we've overrode the default DeletableCounter state. That's because we need it to be a List(Immutable.js will
-convert [] to a List) or an OrderedMap, because when Elmy sees a List or OrderedMap it will map through the, otherwise
+convert [] to a List) or an OrderedMap, because when Elmy sees a List or OrderedMap it will map through it, otherwise
 we'd just get a single DeletableCounter.
 
 Now let's make it add new counters when we click "add new". We already have our accessor, so we could do something like...
@@ -290,11 +290,11 @@ let pushDeletableCounter = counters => counters.push(DeletableCounter.model)
 Better. But there's still another problem. Notice we're trying to push DeletableCounter.model, but DeletableCounter has no
 model! We did not define it, because we wanted the default state of the Counter. Even if it existed, how do we know it
  includes the states of the children defined in _adopt_? That's exactly why _buildState_ exist. It's an utility function
- that computes the state of a model based on its initial state and the state of its children. Import it from "elmy/lib/buildModel"
+ that computes the state of a module based on its initial state and the state of its children. Import it from "elmy/lib/buildModel"
 
 ```js
 import buildModel from "elmy/lib/buildModel";
-let pushDeletableCounter = counters => counters.push(buildModel(DeletableCounter.model))
+let pushDeletableCounter = counters => counters.push(buildModel(DeletableCounter))
 ```
 
 and then
@@ -336,7 +336,7 @@ let B = {adopt{ c: C}}
 let A = {adopt{ b: B}}
 ```
 
-When the module C sends an action ["foo", "bar"], it's send to the module A, but it's modified so that you can track its
+When the module C sends an action ["foo", "bar"], it's sent to the module A, but it's modified so that you can track its
 travel path. So module A will receive ['b', 'c', 'foo', 'bar']. If module A is not interested in this action, or it allows
 it to travel deeper down the hierarchy, next, module B will receive an action ['c', 'foo', 'bar']. And if module B is not
 interested or it decides to invoke C's update, C will receive just ['foo', 'bar'], exactly what it sent.
@@ -390,7 +390,7 @@ var Validator = {
 
     update(state, nextState, action, field, value){
         if("change" == action){
-            /*perform some validation:*
+            /*perform some validation:*/
             if(!valid){
                 return state;//something went wrong, so we return the current state,
                 //the data will not be sent to children, and Elmy will not execute the field update
@@ -407,7 +407,7 @@ var Validator = {
 }
 ```
 
-That update function is a bit ugly, but we mentioned another way to listen for an action. That other way is patter matching,
+That update function is a bit ugly, but we mentioned another way to listen for an action. That other way is pattern matching,
 it matches the fragments of the action, so if you're listening for a ['foo', 'bar'] action, you could write
 
 ```js
