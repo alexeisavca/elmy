@@ -480,3 +480,8 @@ and check how it looks on the [examples](https://alexeisavca.github.io/elmy/) pa
 ## More examples
 
 * TodoMVC. [Code](https://github.com/alexeisavca/todomvc-app-template/blob/gh-pages/index.jsx) [Demo](https://alexeisavca.github.io/todomvc-app-template/)
+
+## Todo:
+* computable models
+* side effects
+* inputs that bind to accessors
