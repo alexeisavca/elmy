@@ -1,7 +1,7 @@
 import React from "react";
 import Counter from "./counter";
 import {fromJS} from "immutable";
-import buildModel from "../lib/buildModel/index.es6";
+import push from "../lib/push";
 
 let DeletableCounter = {
   adopt: {counter: Counter},
@@ -11,8 +11,6 @@ let DeletableCounter = {
     <i className="glyphicon glyphicon-trash" onClick={e => send("delete")}></i>
   </div>
 };
-
-let add = counters => counters.push(buildModel(DeletableCounter));
 
 export default {
   model: fromJS({counters: []}),
@@ -26,7 +24,7 @@ export default {
   view: ({counters}, {Counters}) => <div>
     {Counters()}
     <div>
-      <button onClick={e => counters(add)}>Add new</button>
+      <button onClick={e => counters(push(DeletableCounter))}>Add new</button>
     </div>
   </div>
 }
