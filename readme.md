@@ -324,6 +324,130 @@ Or even
 <button onClick={e => counters(push(DeletableCounter))}>Add new</button>
 ```
 
+Alright, so only one last thing remains, deleting the counters. We are already sending a "delete" action from DeletableCounter,
+but no one receives it. In fact, if you open the console you can see the message telling you there's no handler for this
+action. So, what exactly _are_ actions? Well, they're just arrays. Invoking _send("foo", "bar", 123)_ will create a
+["foo", "bar", 123] "action" aka array. But we need those to be arrays, because when an action travels up a hierarchy,
+ there's something interesting happening. Suppose you have an app like this:
+
+```js
+let C = {view(){/*...*/}}
+let B = {adopt{ c: C}}
+let A = {adopt{ b: B}}
+```
+
+When the module C sends an action ["foo", "bar"], it's send to the module A, but it's modified so that you can track its
+travel path. So module A will receive ['b', 'c', 'foo', 'bar']. If module A is not interested in this action, or it allows
+it to travel deeper down the hierarchy, next, module B will receive an action ['c', 'foo', 'bar']. And if module B is not
+interested or it decides to invoke C's update, C will receive just ['foo', 'bar'], exactly what it sent.
+
+In fact, when we're calling an accessor with a value, we're actually sending actions. _fieldName(value)_ is in fact a
+shorthand for _send("change", fieldName, value)_. In the current example, given a counter has the value of 0, and we
+we click on the + button, first the Counters module gets the event ['counters', _index_, 'deletable', 'change', 'value', 1],
+ where _index_ is the index of the sender inside the List, i.e. 0, 1, 2 etc. Next, since Counters is not interested in
+ this action, ['deletable', 'change', 'value', 1] gets sent to DeletableCounter, and since it's not interested in this
+ action, Counter receives the ['change', 'value', 1] action, but it's not interested either, in which case, Elmy looks
+ at the action, sees that it's a "change", and updates the 'value' with 1. It's because "change" is a special action and
+ Elmy knows how to process it, but in any other case in such a scenario you would receive a "could not find handler for action"
+ error message.
+
+Now that we have a general idea about actions, we may ask ourselves how does a module listen to an action. There are several
+ways. One way is to define an update method on the module, like this:
+
+```js
+var Counters = {
+    model: fromJS({
+        counters: []
+    }),
+
+    adopt: {
+        counters: DeletableCounter
+    },
+
+    update(model, nextState, ...path){
+    },
+
+    view: ({counters}, {Counters}) => <div>
+        {Counters()}
+        <div>
+            <button onClick={e => counters(push(DeletableCounter)}>Add new</button>
+        </div>
+    </div>
+}
+```
+
+The first argument is the current state of the module, the second argument is a function, that once invoked will compute
+what the state would look like if the action wasn't intercepted, and the rest of the arguments are the components of the
+action, so if we have a counter with value of 0 and we click +, Counters.update would be called with (state, nextState,
+'counters', _index_, 'deletable', 'change', 'value', 1), DeletableCounter.update would be called with (state, nextState,
+'deletable', 'change', 'value', 1) and finally Counter.update would've been called with (state, nextState, 'change', 'value', 1)
+
+That nextState thing might sound a bit odd, so let's review an example. Suppose we have a validator module:
+
+```js
+var Validator = {
+    model: fromJS({value: ""}),
+
+    update(state, nextState, action, field, value){
+        if("change" == action){
+            /*perform some validation:*
+            if(!valid){
+                return state;//something went wrong, so we return the current state,
+                //the data will not be sent to children, and Elmy will not execute the field update
+            } else if(kindaValid){
+                return nextState().set('field', value);//all is okish, but the data received from children
+                //(or from Elmy updating the model) needs some modification
+            } else if(totallyValid){
+                return nextState()//all is fine, nothing to do here, just follow the default procedure
+            }
+        }
+    },
+
+    view: ({value}) => <input value={value()} onChange={e => value(e.target.value)}/>
+}
+```
+
+That update function is a bit ugly, but we mentioned another way to listen for an action. That other way is patter matching,
+it matches the fragments of the action, so if you're listening for a ['foo', 'bar'] action, you could write
+
+```js
+   {
+        update: {
+            foo: (state, nextState, ...rest)//rest == ['bar']
+        }
+   }
+```
+
+Obviously, this way you can match children actions, too. If you have a child "foo", which has a child "bar", which emits
+an action "baz", this will let you match that particular case:
+
+```js
+    {
+        update: {
+            foo: {
+                bar: {
+                    baz: state => //something something
+                }
+            }
+        }
+    }
+```
+
+You can also use \_ as wildcard, so
+
+```js
+    {
+        update: {
+            foo: {
+                _: state => //something something
+            }
+        }
+    }
+```
+Will match any action sent from "foo" or from it's children.
+
+Phew, glad we got that behind us, now that we know all that, let's finish our Counters module:
+
 ```js
 var Counters = {
     model: fromJS({
@@ -346,3 +470,13 @@ var Counters = {
     </div>
 }
 ```
+
+Whenever Counters routes an action from its children, it checks if it's delete, and if it is, it deletes the model
+of the child that sent it, in any other case, it just bails and returns the next state.
+
+You can see this example [here](https://github.com/alexeisavca/elmy/blob/gh-pages/examples/counters.jsx)
+and check how it looks on the [examples](https://alexeisavca.github.io/elmy/) page.
+
+## More examples
+
+* TodoMVC. [Code](https://github.com/alexeisavca/todomvc-app-template/blob/gh-pages/index.jsx) [Demo](https://alexeisavca.github.io/todomvc-app-template/)
