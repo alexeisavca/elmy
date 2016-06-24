@@ -23,8 +23,12 @@ let module2component = ({model = fromJS({}), adopt = {}, view}) => class extends
 
     let boundClasses = mapObjValues(adopt, module2component);
 
-    let bindChild = (...path) => () => isMappable(this.props.model.getIn(path)) ?
-        this.props.model.getIn(path).map((_, index) => bindChild(...path, index)()).toArray() :
+    let bindChild = (...path) => maybeModel => isMappable(maybeModel || this.props.model.getIn(path)) ?
+        (maybeModel || this.props.model.getIn(path)).map((_, key) =>  React.createElement(boundClasses[path[0]], {
+          model: this.props.model.getIn([...path, key]),
+          send: this.props.send.bind(null, ...path, key),
+          key
+        })).toArray() :
         React.createElement(boundClasses[path[0]], {
           model: this.props.model.getIn(path),
           send: this.props.send.bind(null, ...path)
