@@ -6,9 +6,7 @@ import buildModel from "./lib/buildModel/index.es6";
 
 export default function(domNode, module){
   let Root = module2component(module);
-  let render = model => ReactDOM.render(
-      React.createElement(Root, {model, send: receive})
-  );
+  let render = model => ReactDOM.render(React.createElement(Root, {model, send: receive}), domNode);
 
   let model = buildModel(module);
 
