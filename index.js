@@ -30,6 +30,10 @@ var _libBuildModelIndexEs6 = require("./lib/buildModel/index.es6");
 
 var _libBuildModelIndexEs62 = _interopRequireDefault(_libBuildModelIndexEs6);
 
+var _libIsMappable = require("./lib/isMappable");
+
+var _libIsMappable2 = _interopRequireDefault(_libIsMappable);
+
 exports["default"] = function (domNode, module) {
   var Root = (0, _libToComponent2["default"])(module);
   var render = function render(model) {
@@ -123,7 +127,7 @@ exports["default"] = function (domNode, module) {
     }
 
     if (module.adopt && module.adopt[head]) {
-      var path = _immutable.List.isList(model.get(head)) ? [head, tail.shift()] : [head];
+      var path = (0, _libIsMappable2["default"])(model.get(head)) ? [head, tail.shift()] : [head];
       return model.setIn(path, update(module.adopt[head], model.getIn(path), tail));
     }
 

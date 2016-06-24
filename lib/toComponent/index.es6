@@ -1,8 +1,9 @@
 import React from "react";
-import {fromJS, List} from "immutable";
+import {fromJS} from "immutable";
 import mapObjValues from "@alexeisavca/ftools/dstructs/mapObjValues";
 import mapObjTuples from "@alexeisavca/ftools/dstructs/mapObjTuples";
 import capitalize from "@alexeisavca/ftools/strings/capitalize";
+import isMappable from "../isMappable";
 
 let module2component = ({model = fromJS({}), adopt = {}, view}) => class extends React.Component{
   constructor(...props){
@@ -22,8 +23,11 @@ let module2component = ({model = fromJS({}), adopt = {}, view}) => class extends
 
     let boundClasses = mapObjValues(adopt, module2component);
 
-    let bindChild = (...path) => () => List.isList(this.props.model.getIn(path)) ?
-        this.props.model.getIn(path).map((_, index) => bindChild(...path, index)()) :
+    let bindChild = (...path) => maybeModel => isMappable(maybeModel || this.props.model.getIn(path)) ?
+        (maybeModel || this.props.model.getIn(path)).map((_, key) =>  React.createElement(boundClasses[path[0]], {
+          model: this.props.model.getIn([...path, key]),
+          send: this.props.send.bind(null, ...path, key)
+        })).toArray() :
         React.createElement(boundClasses[path[0]], {
           model: this.props.model.getIn(path),
           send: this.props.send.bind(null, ...path)

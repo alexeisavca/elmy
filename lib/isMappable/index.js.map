@@ -1,0 +1,1 @@
+{"version":3,"sources":["index.es6"],"names":[],"mappings":";;;;;;yBAA+B,WAAW;;qBAC3B,UAAA,aAAa;SAAI,gBAAK,MAAM,CAAC,aAAa,CAAC,IAAI,sBAAW,YAAY,CAAC,aAAa,CAAC;CAAA","file":"index.js","sourcesContent":["import {List, OrderedMap} from \"immutable\";\r\nexport default maybeMappable => List.isList(maybeMappable) || OrderedMap.isOrderedMap(maybeMappable);"]}

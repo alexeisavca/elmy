@@ -1,15 +1,13 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import {List, Iterable} from "immutable";
+import {Iterable} from "immutable";
 import module2component from "./lib/toComponent";
 import buildModel from "./lib/buildModel/index.es6";
+import isMappable from "./lib/isMappable";
 
 export default function(domNode, module){
   let Root = module2component(module);
-  let render = model => ReactDOM.render(
-      React.createElement(Root, {model, send: receive}),
-      domNode
-  );
+  let render = model => ReactDOM.render(React.createElement(Root, {model, send: receive}), domNode);
 
   let model = buildModel(module);
 
@@ -53,7 +51,7 @@ export default function(domNode, module){
     }
 
     if(module.adopt && module.adopt[head]) {
-      let path = List.isList(model.get(head)) ? [head, tail.shift()] : [head];
+      let path = isMappable(model.get(head)) ? [head, tail.shift()] : [head];
       return model.setIn(path, update(module.adopt[head], model.getIn(path), tail))
     }
 
