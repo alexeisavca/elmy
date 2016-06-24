@@ -487,3 +487,5 @@ and check how it looks on the [examples](https://alexeisavca.github.io/elmy/) pa
 * inputs that bind to accessors
 * Elmy mixin and superclass for React components
 * Invoking actions right away on root module mount
+* VirtualDOM support
+* Support for immutable libraries other than Immutable.js
