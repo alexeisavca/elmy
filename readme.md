@@ -211,3 +211,138 @@ const DeletableCounter = {
 ```
 
 Now our counter will start with a default value of 10.
+
+Just one more thing remains: DeletableCounter must somehow notify its parents that it's being deleted. To do that we introduce
+the 3rd argument to our view function which is _send_, which sends actions. We will talk about actions more later
+but for now we just need to know that _send_ takes and unlimited number of arguments and sends an action based on those.
+
+```js
+const DeletableCounter = {
+    model: fromJS({
+        deletable: Counter.model.set('value', 10)
+    }),
+
+    adopt: {
+        deletable: Counter
+    },
+
+    view: (_, {Deletable}) => <div>
+        {Deletable()}
+        <i className="glyphicon glyphicon-trash" onClick={e => send("delete")}/>
+    </div>
+}
+```
+
+So here clicking on the trash icon will just send a "delete" action.
+
+### Finalizing
+Ok, now that we have our DeletableCounter that sends its action when needed, it's time to wrap it up. We'll start by creating
+a module called Counter__s__
+
+```js
+var Counters = {
+    view: () => <div>
+        here be counters
+        <div>
+            <button>Add new</button>
+        </div>
+    </div>
+}
+```
+
+Ok, we have a placeholder for counters and an add new button. Now, let's couple our new module with DeletableCounter
+
+```js
+var Counters = {
+    model: fromJS({
+        counters: []
+    }),
+
+    adopt: {
+        counters: DeletableCounter
+    },
+
+    view: ({counters}, {Counters}) => <div>
+        {Counters()}
+        <div>
+            <button>Add new</button>
+        </div>
+    </div>
+}
+```
+
+As you see, we've overrode the default DeletableCounter state. That's because we need it to be a List(Immutable.js will
+convert [] to a List) or an OrderedMap, because when Elmy sees a List or OrderedMap it will map through the, otherwise
+we'd just get a single DeletableCounter.
+
+Now let's make it add new counters when we click "add new". We already have our accessor, so we could do something like...
+
+```js
+<button onClick={e => counter(counters => counters.push(DeletableCounter.model))}>Add new</button>
+```
+
+But wait, there's two problems with this. First, it's too verbose, so let's extract it into a separate function:
+
+```js
+let pushDeletableCounter = counters => counters.push(DeletableCounter.model)
+```
+
+Better. But there's still another problem. Notice we're trying to push DeletableCounter.model, but DeletableCounter has no
+model! We did not define it, because we wanted the default state of the Counter. Even if it existed, how do we know it
+ includes the states of the children defined in _adopt_? That's exactly why _buildState_ exist. It's an utility function
+ that computes the state of a model based on its initial state and the state of its children. Import it from "elmy/lib/buildModel"
+
+```js
+import buildModel from "elmy/lib/buildModel";
+let pushDeletableCounter = counters => counters.push(buildModel(DeletableCounter.model))
+```
+
+and then
+
+```js
+<button onClick={e => counters(pushDeletableCounter)}>Add new</button>
+```
+
+But there's actually a function that does just that, it's called _push_ and you can import it from "elmy/lib/push".
+It takes a model and returns a function that takes List and pushes the built model into the list. Why didn't I tell you
+ this in the first place? So that you understand how building models works ;) Anyway:
+
+```js
+import push from "elmy/lib/push";
+let pushDeletableCounter = push(DeletableCounter);
+```
+
+and then
+
+```js
+<button onClick={e => counters(pushDeletableCounter)}>Add new</button>
+```
+
+Or even
+
+```js
+<button onClick={e => counters(push(DeletableCounter))}>Add new</button>
+```
+
+```js
+var Counters = {
+    model: fromJS({
+        counters: []
+    }),
+
+    adopt: {
+        counters: DeletableCounter
+    },
+
+    update: {
+        counters: (state, nextState, index, action) => "delete" == action ? state.deleteIn(['counters', index]) : nextState()
+    },
+
+    view: ({counters}, {Counters}) => <div>
+        {Counters()}
+        <div>
+            <button onClick={e => counters(push(DeletableCounter)}>Add new</button>
+        </div>
+    </div>
+}
+```
