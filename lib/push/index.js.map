@@ -1,0 +1,1 @@
+{"version":3,"sources":["index.es6"],"names":[],"mappings":";;;;;;;;0BAAuB,eAAe;;;;qBAEvB,UAAA,KAAK;SAAI,UAAA,KAAK;WAAI,KAAK,CAAC,IAAI,CAAC,6BAAW,KAAK,CAAC,CAAC;GAAA;CAAA","file":"index.js","sourcesContent":["import buildModel from \"../buildModel\";\r\n\r\nexport default model => items => items.push(buildModel(model));"]}
